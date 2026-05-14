@@ -1,15 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useLang } from "./LanguageProvider";
+import { content } from "@/lib/content";
 
 const WA_LINK = "https://wa.me/12015348825";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const { lang, toggle } = useLang();
+  const c = content[lang].nav;
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handler);
+    let ticking = false;
+    const handler = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
@@ -28,19 +41,29 @@ export default function Nav() {
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-navy/70">
-          <a href="#audiences" className="hover:text-navy transition-colors">Para quién</a>
-          <a href="#features" className="hover:text-navy transition-colors">Funciones</a>
-          <a href="#how" className="hover:text-navy transition-colors">Cómo funciona</a>
+          <a href="#audiences" className="hover:text-navy transition-colors">{c.audiences}</a>
+          <a href="#features" className="hover:text-navy transition-colors">{c.features}</a>
+          <a href="#how" className="hover:text-navy transition-colors">{c.how}</a>
         </div>
 
-        <a
-          href={WA_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-teal text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-teal-dark transition-colors"
-        >
-          Empezar
-        </a>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggle}
+            className="text-sm font-semibold text-navy/50 hover:text-navy transition-colors flex items-center gap-1.5"
+            aria-label="Switch language"
+          >
+            {lang === "es" ? "🇺🇸" : "🇦🇷"}
+            <span>{lang === "es" ? "EN" : "ES"}</span>
+          </button>
+          <a
+            href={WA_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-teal text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-teal-dark transition-colors"
+          >
+            {c.cta}
+          </a>
+        </div>
       </div>
     </nav>
   );

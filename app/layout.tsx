@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { MotionProvider } from "@/components/MotionProvider";
+import { LanguageProvider } from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
   title: "Aleph — Tu coach de fitness en WhatsApp",
@@ -13,7 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="h-full">
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <LanguageProvider>
+          <MotionProvider>{children}</MotionProvider>
+        </LanguageProvider>
+      </body>
     </html>
   );
 }
