@@ -5,6 +5,7 @@ import Audiences from "@/components/Audiences";
 import Features from "@/components/Features";
 import HowItWorks from "@/components/HowItWorks";
 import FinalCTA from "@/components/FinalCTA";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <Features />
       <HowItWorks />
       <FinalCTA />
+      <Footer />
     </>
   );
 }
