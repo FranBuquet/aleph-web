@@ -12,6 +12,13 @@ export async function subscribeAction(formData: FormData) {
   if (!/^\d{10,15}$/.test(phone)) throw new Error("Teléfono inválido (solo números, sin +).");
   if (!email.includes("@")) throw new Error("Email inválido.");
 
-  const initPoint = await createAlephSubscription(phone, name, email);
+  let initPoint: string;
+  try {
+    initPoint = await createAlephSubscription(phone, name, email);
+  } catch (err) {
+    console.error("[subscribe] MP error:", err);
+    throw new Error("No pudimos procesar tu suscripción. Intentá de nuevo en unos minutos.");
+  }
+
   redirect(initPoint);
 }

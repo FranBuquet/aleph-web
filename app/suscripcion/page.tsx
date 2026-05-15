@@ -41,11 +41,11 @@ export default function SuscripcionPage() {
             <input
               name="phone"
               type="tel"
-              placeholder="5491140783378"
+              placeholder="541140783378"
               required
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-navy placeholder-navy/30 focus:outline-none focus:ring-2 focus:ring-teal/40"
             />
-            <p className="text-xs text-navy/40 mt-1">Ej: 549 + código de área + número</p>
+            <p className="text-xs text-navy/40 mt-1">Ej: 54 + código de área + número (sin el 9)</p>
           </div>
 
           <div>
