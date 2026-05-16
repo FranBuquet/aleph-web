@@ -139,6 +139,11 @@ export default function Hero() {
             {c.sub}
           </p>
 
+          <p className="text-sm text-navy/50 mb-6 flex items-center gap-1.5">
+            <span className="text-teal font-bold">✓</span>
+            {c.trial_note}
+          </p>
+
           <div className="flex flex-wrap gap-4">
             <a
               href={WA_LINK}
