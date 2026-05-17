@@ -44,6 +44,7 @@ export default function Nav() {
           <a href="#audiences" className="hover:text-navy transition-colors">{c.audiences}</a>
           <a href="#features" className="hover:text-navy transition-colors">{c.features}</a>
           <a href="#how" className="hover:text-navy transition-colors">{c.how}</a>
+          <a href="#pro" className="hover:text-navy transition-colors">{c.pro}</a>
         </div>
 
         <div className="flex items-center gap-3">

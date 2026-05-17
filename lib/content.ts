@@ -6,6 +6,7 @@ export const content = {
       audiences: "Para quién",
       features: "Funciones",
       how: "Cómo funciona",
+      pro: "Para coaches",
       cta: "Empezar",
     },
     hero: {
@@ -16,6 +17,8 @@ export const content = {
       cta1: "Empezar ahora →",
       cta2: "Cómo funciona",
       trial_note: "✓ Probá 7 días gratis · Cancelá cuando quieras",
+      pro_label: "¿Sos coach o nutricionista?",
+      pro_link: "Ver plan para profesionales →",
       card_macros_label: "Macros hoy",
       card_macros_pct: "81%",
       card_macros_kcal: "1.840",
@@ -129,6 +132,42 @@ export const content = {
         },
       ],
     },
+    pro: {
+      label: "Para profesionales",
+      h2a: "Seguimiento real,",
+      h2b: "desde donde ya trabajás.",
+      sub: "Cargá planes, pedí informes y configurá alertas para cada cliente — todo desde WhatsApp.",
+      features: [
+        {
+          title: "Planes al instante",
+          body: "Cargás la dieta o rutina de un cliente directamente al chat. Ellos la reciben con una notificación.",
+        },
+        {
+          title: "Informes cuando los pedís",
+          body: "Un mensaje y tenés el resumen de peso, macros y entrenos de los últimos días.",
+        },
+        {
+          title: "Alertas personalizadas",
+          body: "Si un cliente no registra nada en varios días o su peso varía más de lo esperado, te avisamos.",
+        },
+        {
+          title: "Sin fricción para nadie",
+          body: "Tus clientes ya usan WhatsApp. No hay app nueva que aprender ni integración que configurar.",
+        },
+      ],
+      chat: [
+        { from: "pro" as const, text: "informe María 7 días" },
+        { from: "bot" as const, text: "📊 Últimos 7 días\n⚖️ Peso: 68.2 kg (−0.8 kg)\n🏋️ 4 sesiones\n🍽️ 1.840 kcal · 142g prot" },
+        { from: "pro" as const, text: "cargar dieta a Franco" },
+        { from: "bot" as const, text: "📝 Enviá el plan en el próximo mensaje." },
+      ],
+      plans: [
+        { name: "Starter", clients: 10, price: "$19.900", period: "/mes", recommended: false },
+        { name: "Pro", clients: 25, price: "$34.900", period: "/mes", recommended: true },
+      ],
+      plans_note: "Los clientes que sumés al seguimiento deben tener suscripción activa en Aleph.",
+      cta: "Empezar →",
+    },
     cta: {
       h2: "Empezá hoy.",
       sub: "Sin app. Sin tarjeta. Solo WhatsApp.",
@@ -141,6 +180,7 @@ export const content = {
       audiences: "Who it's for",
       features: "Features",
       how: "How it works",
+      pro: "For coaches",
       cta: "Get started",
     },
     hero: {
@@ -151,6 +191,8 @@ export const content = {
       cta1: "Get started →",
       cta2: "How it works",
       trial_note: "✓ Try 7 days free · Cancel anytime",
+      pro_label: "Are you a coach or nutritionist?",
+      pro_link: "See pro plan →",
       card_macros_label: "Today's macros",
       card_macros_pct: "81%",
       card_macros_kcal: "1,840",
@@ -263,6 +305,42 @@ export const content = {
           body: "Log meals, workouts, and weight. Aleph tracks your progress and adjusts your plan as your situation changes.",
         },
       ],
+    },
+    pro: {
+      label: "For professionals",
+      h2a: "Real tracking,",
+      h2b: "from where you already work.",
+      sub: "Upload plans, request reports, and set alerts for each client — all from WhatsApp.",
+      features: [
+        {
+          title: "Plans in an instant",
+          body: "Upload a client's diet or routine directly in the chat. They receive it with a notification.",
+        },
+        {
+          title: "Reports on demand",
+          body: "One message and you have a summary of weight, macros, and workouts from the past few days.",
+        },
+        {
+          title: "Personalized alerts",
+          body: "If a client doesn't log anything for several days or their weight varies more than expected, we notify you.",
+        },
+        {
+          title: "Zero friction for everyone",
+          body: "Your clients already use WhatsApp. No new app to learn, no integration to configure.",
+        },
+      ],
+      chat: [
+        { from: "pro" as const, text: "report María 7 days" },
+        { from: "bot" as const, text: "📊 Last 7 days\n⚖️ Weight: 150.2 lb (−1.8 lb)\n🏋️ 4 sessions\n🍽️ 1,840 kcal · 142g prot" },
+        { from: "pro" as const, text: "upload diet for Franco" },
+        { from: "bot" as const, text: "📝 Send the plan in your next message." },
+      ],
+      plans: [
+        { name: "Starter", clients: 10, price: "$19.900", period: "/mo", recommended: false },
+        { name: "Pro", clients: 25, price: "$34.900", period: "/mo", recommended: true },
+      ],
+      plans_note: "Clients you add to tracking must have an active Aleph subscription.",
+      cta: "Get started →",
     },
     cta: {
       h2: "Start today.",

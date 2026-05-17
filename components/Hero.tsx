@@ -118,14 +118,14 @@ export default function Hero() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] bg-teal-light/15 rounded-full blur-[140px]" />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-6 w-full py-24 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative max-w-6xl mx-auto px-6 w-full pt-8 pb-16 lg:py-24 grid lg:grid-cols-2 gap-16 items-center">
         {/* Copy */}
         <m.div
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <div className="inline-flex items-center gap-2 bg-teal/10 text-teal text-sm font-semibold px-4 py-1.5 rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 bg-teal/10 text-teal text-sm font-semibold px-4 py-1.5 rounded-full mb-4 lg:mb-6">
             <span className="w-2 h-2 bg-teal rounded-full animate-pulse" />
             {c.badge}
           </div>
@@ -135,11 +135,11 @@ export default function Hero() {
             <span className="text-teal">{c.h1b}</span>
           </h1>
 
-          <p className="text-xl text-navy/60 leading-relaxed mb-10 max-w-lg">
+          <p className="text-xl text-navy/60 leading-relaxed mb-6 lg:mb-10 max-w-lg">
             {c.sub}
           </p>
 
-          <p className="text-sm text-navy/50 mb-6 flex items-center gap-1.5">
+          <p className="text-sm text-navy/50 mb-4 lg:mb-6 flex items-center gap-1.5">
             <span className="text-teal font-bold">✓</span>
             {c.trial_note}
           </p>
@@ -149,17 +149,24 @@ export default function Hero() {
               href={WA_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-teal text-white font-semibold px-8 py-4 rounded-full text-lg hover:bg-teal-dark transition-colors shadow-lg shadow-teal/30"
+              className="bg-teal text-white font-semibold px-6 py-3 rounded-full text-base hover:bg-teal-dark transition-colors shadow-lg shadow-teal/30"
             >
               {c.cta1}
             </a>
             <a
               href="#how"
-              className="text-navy font-semibold px-8 py-4 rounded-full text-lg border border-navy/20 hover:border-navy/40 transition-colors"
+              className="text-navy font-semibold px-6 py-3 rounded-full text-base border border-navy/20 hover:border-navy/40 transition-colors"
             >
               {c.cta2}
             </a>
           </div>
+
+          <p className="text-base text-navy/80 mt-5">
+            {c.pro_label}{" "}
+            <a href="#pro" className="text-teal hover:underline underline-offset-2 font-semibold">
+              {c.pro_link}
+            </a>
+          </p>
         </m.div>
 
         {/* Floating cards */}
