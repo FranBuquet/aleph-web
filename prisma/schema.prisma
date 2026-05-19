@@ -1,0 +1,205 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  phone           String   @id
+  name            String?
+  height          Float?
+  age             Int?
+  weight          Float?
+  trainingDays    Int?     @map("training_days")
+  language        String?
+  timezone        String?
+  sex             String?
+  activityLevel   String?  @map("activity_level")
+  fitnessGoal     String?  @map("fitness_goal")
+  sportType       String?  @map("sport_type")
+  bodyFatPct      Float?   @map("body_fat_pct")
+  leanMassKg      Float?   @map("lean_mass_kg")
+  focus           String?
+  onboardingDone  Boolean  @default(false) @map("onboarding_done")
+  macrosExplained Boolean  @default(false) @map("macros_explained")
+  targetCalories  Int?     @map("target_calories")
+  targetProtein   Float?   @map("target_protein")
+  targetCarbs     Float?   @map("target_carbs")
+  targetFat       Float?   @map("target_fat")
+
+  sessions            WorkoutSession[]
+  bodyWeight          BodyWeight[]
+  routines            Routine[]
+  meals               Meal[]
+  subscription        Subscription?
+  conversationHistory ConversationHistory?
+  rateLimit           RateLimit?
+  proAccount          Professional?
+  authOtp             AuthOtp?
+
+  @@map("users")
+}
+
+model AuthOtp {
+  phone     String   @id
+  codeHash  String   @map("code_hash")
+  expiresAt DateTime @map("expires_at")
+
+  user User @relation(fields: [phone], references: [phone])
+
+  @@map("auth_otps")
+}
+
+model Subscription {
+  phone                String    @id
+  status               String
+  plan                 String
+  activatedAt          DateTime  @map("activated_at")
+  deactivatedAt        DateTime? @map("deactivated_at")
+  expiresAt            DateTime? @map("expires_at")
+  healthToken          String?   @unique @map("health_token")
+  mpSubscriptionId     String?   @map("mp_subscription_id")
+  stravaUserId         String?   @map("strava_user_id")
+  stravaAccessToken    String?   @map("strava_access_token")
+  stravaRefreshToken   String?   @map("strava_refresh_token")
+  stravaTokenExpiresAt DateTime? @map("strava_token_expires_at")
+
+  user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model WorkoutSession {
+  id             String   @id
+  phone          String
+  date           DateTime @db.Date
+  dayName        String   @map("day_name")
+  routineName    String?  @map("routine_name")
+  notes          String?
+  durationMin    Int?     @map("duration_min")
+  caloriesBurned Int?     @map("calories_burned")
+  data           Json
+
+  user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
+
+  @@index([phone, date])
+  @@map("workout_sessions")
+}
+
+model BodyWeight {
+  id     Int      @id @default(autoincrement())
+  phone  String
+  date   DateTime @db.Date
+  weight Float
+
+  user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
+
+  @@unique([phone, date])
+  @@index([phone])
+  @@map("body_weight")
+}
+
+model Routine {
+  id    String @id @default(cuid())
+  phone String
+  name  String
+  data  Json
+
+  user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
+
+  @@unique([phone, name])
+  @@map("routines")
+}
+
+model Meal {
+  id          String   @id
+  phone       String
+  date        DateTime @db.Date
+  time        String
+  meal        String
+  description String
+  portionNote String   @map("portion_note")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  fromPhoto   Boolean  @default(false) @map("from_photo")
+
+  user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
+
+  @@index([phone, date])
+  @@map("meals")
+}
+
+model ConversationHistory {
+  phone     String   @id
+  messages  Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
+
+  @@map("conversation_history")
+}
+
+model RateLimit {
+  phone             String @id
+  minuteCount       Int    @default(0) @map("minute_count")
+  minuteWindowStart BigInt @default(0) @map("minute_window_start")
+  dayCount          Int    @default(0) @map("day_count")
+  dayWindowStart    BigInt @default(0) @map("day_window_start")
+
+  user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
+
+  @@map("rate_limits")
+}
+
+model Professional {
+  phone      String @id
+  maxClients Int    @map("max_clients")
+
+  user    User        @relation(fields: [phone], references: [phone], onDelete: Cascade)
+  clients ProClient[]
+  alerts  ProAlert[]
+
+  @@map("professionals")
+}
+
+model ProClient {
+  proPhone    String @map("pro_phone")
+  clientPhone String @map("client_phone")
+  alias       String
+
+  professional Professional @relation(fields: [proPhone], references: [phone], onDelete: Cascade)
+
+  @@id([proPhone, clientPhone])
+  @@map("pro_clients")
+}
+
+model ProAlert {
+  id           String  @id @default(cuid())
+  proPhone     String  @map("pro_phone")
+  clientPhone  String  @map("client_phone")
+  metric       String
+  op           String
+  threshold    Float
+  days         Int
+  notifyClient Boolean @default(false) @map("notify_client")
+  active       Boolean @default(true)
+
+  professional Professional @relation(fields: [proPhone], references: [phone], onDelete: Cascade)
+
+  @@map("pro_alerts")
+}
+
+model ProPlan {
+  clientPhone String   @map("client_phone")
+  type        String
+  content     String
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@id([clientPhone, type])
+  @@map("pro_plans")
+}
