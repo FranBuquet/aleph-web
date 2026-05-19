@@ -83,12 +83,14 @@ export function MacroAdherenceChart({ dataByPeriod }: {
   const [period, setPeriod] = useState<Period>("month");
   const data = dataByPeriod[period];
 
-  const fmt = data.map(d => ({
-    day: DAYS[d.day],
-    protein: d.tracked > 0 ? Math.round((d.hitProtein / d.tracked) * 100) : 0,
-    carbs: d.tracked > 0 ? Math.round((d.hitCarbs / d.tracked) * 100) : 0,
-    fat: d.tracked > 0 ? Math.round((d.hitFat / d.tracked) * 100) : 0,
-  }));
+  const fmt = [...data]
+    .sort((a, b) => (a.day === 0 ? 7 : a.day) - (b.day === 0 ? 7 : b.day))
+    .map(d => ({
+      day: DAYS[d.day],
+      protein: d.tracked > 0 ? Math.round((d.hitProtein / d.tracked) * 100) : 0,
+      carbs: d.tracked > 0 ? Math.round((d.hitCarbs / d.tracked) * 100) : 0,
+      fat: d.tracked > 0 ? Math.round((d.hitFat / d.tracked) * 100) : 0,
+    }));
 
   return (
     <div className="bg-gray-900 rounded-xl p-5">
