@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { MacroDonut, CaloriasWeekChart, ProteinAdherenceChart } from "./NutricionCharts";
+import { MacroDonut, CaloriasWeekChart, MacroAdherenceChart } from "./NutricionCharts";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +11,12 @@ async function getNutricionData(phone: string) {
   const ago7 = new Date(today); ago7.setDate(ago7.getDate() - 7);
   const ago90 = new Date(today); ago90.setDate(ago90.getDate() - 90);
 
-  const [user, todayMeals, weekMeals, adherenceRaw] = await Promise.all([
-    db.user.findUnique({ where: { phone } }),
+  const user = await db.user.findUnique({ where: { phone } });
+  const tP = (user?.targetProtein ?? 0) * 0.9;
+  const tC = (user?.targetCarbs ?? 0) * 0.9;
+  const tF = (user?.targetFat ?? 0) * 0.9;
+
+  const [todayMeals, weekMeals, adherenceRaw] = await Promise.all([
     db.meal.findMany({ where: { phone, date: { gte: today } }, orderBy: { time: "asc" } }),
     db.meal.groupBy({
       by: ["date"],
@@ -20,13 +24,15 @@ async function getNutricionData(phone: string) {
       _sum: { calories: true, protein: true, carbs: true, fat: true },
       orderBy: { date: "asc" },
     }),
-    db.$queryRaw<{ dow: number; tracked: bigint; hit: bigint }[]>`
+    db.$queryRaw<{ dow: number; tracked: bigint; hit_protein: bigint; hit_carbs: bigint; hit_fat: bigint }[]>`
       SELECT
         EXTRACT(DOW FROM date)::int AS dow,
         COUNT(*) AS tracked,
-        COUNT(CASE WHEN protein >= ${(db as any)._engineConfig ? 0 : 0} THEN 1 END) AS hit
+        COUNT(CASE WHEN protein >= ${tP} THEN 1 END) AS hit_protein,
+        COUNT(CASE WHEN carbs >= ${tC} THEN 1 END) AS hit_carbs,
+        COUNT(CASE WHEN fat >= ${tF} THEN 1 END) AS hit_fat
       FROM (
-        SELECT date, SUM(protein) AS protein
+        SELECT date, SUM(protein) AS protein, SUM(carbs) AS carbs, SUM(fat) AS fat
         FROM meals
         WHERE phone = ${phone} AND date >= ${ago90}
         GROUP BY date
@@ -45,16 +51,17 @@ async function getNutricionData(phone: string) {
     calories: d._sum.calories ?? 0,
   }));
 
-  const targetProtein = user?.targetProtein ?? 0;
   const adherenceData = adherenceRaw.map(r => ({
     day: r.dow,
     tracked: Number(r.tracked),
-    hit: Number(r.hit),
+    hitProtein: Number(r.hit_protein),
+    hitCarbs: Number(r.hit_carbs),
+    hitFat: Number(r.hit_fat),
   }));
 
   return {
     user, todayMeals, todayProtein, todayCarbs, todayFat, todayCalories,
-    weekData, adherenceData, targetProtein,
+    weekData, adherenceData,
   };
 }
 
@@ -64,6 +71,7 @@ export default async function NutricionPage() {
 
   const data = await getNutricionData(session.phone);
   const { user, todayMeals, todayProtein, todayCarbs, todayFat, todayCalories, weekData, adherenceData } = data;
+
 
   return (
     <div>
@@ -80,7 +88,7 @@ export default async function NutricionPage() {
       </div>
 
       <div className="mb-6">
-        <ProteinAdherenceChart data={adherenceData} />
+        <MacroAdherenceChart data={adherenceData} />
       </div>
 
       <h3 className="text-lg font-semibold mb-4">Comidas de hoy</h3>

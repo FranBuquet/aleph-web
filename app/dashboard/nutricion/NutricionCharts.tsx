@@ -67,26 +67,29 @@ export function CaloriasWeekChart({ data, target }: {
   );
 }
 
-export function ProteinAdherenceChart({ data }: {
-  data: { day: number; tracked: number; hit: number }[];
+export function MacroAdherenceChart({ data }: {
+  data: { day: number; tracked: number; hitProtein: number; hitCarbs: number; hitFat: number }[];
 }) {
   const fmt = data.map(d => ({
     day: DAYS[d.day],
-    pct: d.tracked > 0 ? Math.round((d.hit / d.tracked) * 100) : 0,
+    protein: d.tracked > 0 ? Math.round((d.hitProtein / d.tracked) * 100) : 0,
+    carbs: d.tracked > 0 ? Math.round((d.hitCarbs / d.tracked) * 100) : 0,
+    fat: d.tracked > 0 ? Math.round((d.hitFat / d.tracked) * 100) : 0,
   }));
   return (
     <div className="bg-gray-900 rounded-xl p-5">
-      <h3 className="font-semibold mb-1 text-gray-200">Adherencia proteína por día</h3>
-      <p className="text-gray-500 text-xs mb-4">% de días que alcanzaste el objetivo (últimos 90 días)</p>
-      <ResponsiveContainer width="100%" height={180}>
+      <h3 className="font-semibold mb-1 text-gray-200">Adherencia de macros por día de semana</h3>
+      <p className="text-gray-500 text-xs mb-4">% de días que alcanzaste el objetivo de cada macro (últimos 90 días)</p>
+      <ResponsiveContainer width="100%" height={200}>
         <BarChart data={fmt} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
           <XAxis dataKey="day" tick={{ fill: "#9ca3af", fontSize: 12 }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} domain={[0, 100]} axisLine={false} tickLine={false} />
-          <Tooltip contentStyle={{ background: "#1f2937", border: "none", borderRadius: 8 }} formatter={(v) => [`${v}%`, "Adherencia"]} />
-          <ReferenceLine y={80} stroke="#34d399" strokeDasharray="4 4" />
-          <Bar dataKey="pct" radius={[4, 4, 0, 0]}
-            fill="#818cf8"
-          />
+          <Tooltip contentStyle={{ background: "#1f2937", border: "none", borderRadius: 8 }} formatter={(v) => [`${v}%`]} />
+          <Legend formatter={(v) => <span className="text-gray-300 text-xs capitalize">{v === "protein" ? "Proteína" : v === "carbs" ? "Carbos" : "Grasa"}</span>} />
+          <ReferenceLine y={80} stroke="#6b7280" strokeDasharray="4 4" />
+          <Bar dataKey="protein" name="Proteína" fill={COLORS.protein} radius={[4, 4, 0, 0]} />
+          <Bar dataKey="carbs" name="Carbos" fill={COLORS.carbs} radius={[4, 4, 0, 0]} />
+          <Bar dataKey="fat" name="Grasa" fill={COLORS.fat} radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
