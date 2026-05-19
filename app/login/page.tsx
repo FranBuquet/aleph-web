@@ -59,7 +59,7 @@ export default function LoginPage() {
               <label className="text-gray-400 text-xs mb-1 block">Número de WhatsApp</label>
               <input
                 type="tel"
-                placeholder="+5491112345678"
+                placeholder="+541112345678"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-500"
