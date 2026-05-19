@@ -101,22 +101,24 @@ function fmtDate(date: Date) {
   return new Date(date).toLocaleDateString("es-AR", { day: "numeric", month: "short" });
 }
 
-export default async function ClientDashboardPage({ params }: { params: { clientPhone: string } }) {
+export default async function ClientDashboardPage({ params }: { params: Promise<{ clientPhone: string }> }) {
   const session = await getSession();
   if (!session) redirect("/login");
 
+  const { clientPhone } = await params;
+
   const proAccount = await db.professional.findUnique({
     where: { phone: session.phone },
-    include: { clients: { where: { clientPhone: params.clientPhone } } },
+    include: { clients: { where: { clientPhone } } },
   });
   if (!proAccount || proAccount.clients.length === 0) redirect("/dashboard/pro");
 
   const clientRecord = proAccount.clients[0];
-  const data = await getClientData(params.clientPhone);
+  const data = await getClientData(clientPhone);
   const { user, todayMeals, todayProtein, todayCarbs, todayFat, todayCalories,
           caloriesWeekData, adherenceByPeriod, weightData, recentSessions, sessionsWeekData } = data;
 
-  const displayName = clientRecord.alias || user?.name || params.clientPhone;
+  const displayName = clientRecord.alias || user?.name || clientPhone;
 
   return (
     <div>
