@@ -29,6 +29,7 @@ model User {
   targetProtein   Float?   @map("target_protein")
   targetCarbs     Float?   @map("target_carbs")
   targetFat       Float?   @map("target_fat")
+  targetWeight    Float?   @map("target_weight")
 
   sessions            WorkoutSession[]
   bodyWeight          BodyWeight[]

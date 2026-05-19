@@ -11,7 +11,8 @@ async function getEntrenamientoData(phone: string) {
   const ago90 = new Date(today); ago90.setDate(ago90.getDate() - 90);
   const ago84 = new Date(today); ago84.setDate(ago84.getDate() - 84); // 12 semanas
 
-  const [bodyWeights, recentSessions, weeklyRaw] = await Promise.all([
+  const [user, bodyWeights, recentSessions, weeklyRaw] = await Promise.all([
+    db.user.findUnique({ where: { phone }, select: { targetWeight: true } }),
     db.bodyWeight.findMany({
       where: { phone, date: { gte: ago90 } },
       orderBy: { date: "asc" },
@@ -43,7 +44,7 @@ async function getEntrenamientoData(phone: string) {
     sessions: Number(r.sessions),
   }));
 
-  return { weightData, recentSessions, weekData };
+  return { weightData, recentSessions, weekData, targetWeight: user?.targetWeight ?? undefined };
 }
 
 function fmt(date: Date) {
@@ -54,14 +55,14 @@ export default async function EntrenamientoPage() {
   const session = await getSession();
   if (!session) redirect("/login");
 
-  const { weightData, recentSessions, weekData } = await getEntrenamientoData(session.phone);
+  const { weightData, recentSessions, weekData, targetWeight } = await getEntrenamientoData(session.phone);
 
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-8">Entrenamiento</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <PesoChart data={weightData} />
+        <PesoChart data={weightData} target={targetWeight} />
         <FrecuenciaChart data={weekData} />
       </div>
 

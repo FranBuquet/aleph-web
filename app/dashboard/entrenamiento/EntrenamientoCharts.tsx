@@ -4,7 +4,7 @@ import {
   ReferenceLine, CartesianGrid,
 } from "recharts";
 
-export function PesoChart({ data }: { data: { date: string; weight: number }[] }) {
+export function PesoChart({ data, target }: { data: { date: string; weight: number }[]; target?: number }) {
   if (data.length === 0) return (
     <div className="bg-gray-900 rounded-xl p-5 flex items-center justify-center h-48">
       <p className="text-gray-500 text-sm">Sin registros de peso</p>
@@ -28,6 +28,10 @@ export function PesoChart({ data }: { data: { date: string; weight: number }[] }
             labelFormatter={l => new Date(l as string).toLocaleDateString("es-AR")} />
           <ReferenceLine y={avg} stroke="#818cf8" strokeDasharray="4 4"
             label={{ value: `prom ${avg.toFixed(1)}kg`, fill: "#818cf8", fontSize: 10 }} />
+          {target && (
+            <ReferenceLine y={target} stroke="#fbbf24" strokeDasharray="4 4"
+              label={{ value: `objetivo ${target}kg`, fill: "#fbbf24", fontSize: 10 }} />
+          )}
           <Line type="monotone" dataKey="weight" stroke="#34d399" strokeWidth={2}
             dot={data.length < 20} activeDot={{ r: 4 }} />
         </LineChart>
