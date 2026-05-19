@@ -8,6 +8,7 @@ export async function proxy(req: NextRequest) {
 
   const isLoginPage = pathname === "/login";
   const isDashboard = pathname.startsWith("/dashboard");
+  const isMagicLink = pathname.startsWith("/magic/");
 
   let valid = false;
   if (token) {
@@ -20,6 +21,7 @@ export async function proxy(req: NextRequest) {
     } catch {}
   }
 
+  if (isMagicLink) return NextResponse.next();
   if (isDashboard && !valid) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
