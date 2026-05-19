@@ -16,7 +16,27 @@ async function getNutricionData(phone: string) {
   const tC = (user?.targetCarbs ?? 0) * 0.9;
   const tF = (user?.targetFat ?? 0) * 0.9;
 
-  const [todayMeals, weekMeals, adherenceRaw] = await Promise.all([
+  const ago14 = new Date(today); ago14.setDate(ago14.getDate() - 14);
+  const ago28 = new Date(today); ago28.setDate(ago28.getDate() - 28);
+
+  type AdherenceRow = { dow: number; tracked: bigint; hit_protein: bigint; hit_carbs: bigint; hit_fat: bigint };
+  const adherenceQuery = (from: Date) => db.$queryRaw<AdherenceRow[]>`
+    SELECT
+      EXTRACT(DOW FROM date)::int AS dow,
+      COUNT(*) AS tracked,
+      COUNT(CASE WHEN protein >= ${tP} THEN 1 END) AS hit_protein,
+      COUNT(CASE WHEN carbs >= ${tC} THEN 1 END) AS hit_carbs,
+      COUNT(CASE WHEN fat >= ${tF} THEN 1 END) AS hit_fat
+    FROM (
+      SELECT date, SUM(protein) AS protein, SUM(carbs) AS carbs, SUM(fat) AS fat
+      FROM meals
+      WHERE phone = ${phone} AND date >= ${from}
+      GROUP BY date
+    ) daily
+    GROUP BY dow
+  `;
+
+  const [todayMeals, weekMeals, adh7, adh14, adh28] = await Promise.all([
     db.meal.findMany({ where: { phone, date: { gte: today } }, orderBy: { time: "asc" } }),
     db.meal.groupBy({
       by: ["date"],
@@ -24,21 +44,9 @@ async function getNutricionData(phone: string) {
       _sum: { calories: true, protein: true, carbs: true, fat: true },
       orderBy: { date: "asc" },
     }),
-    db.$queryRaw<{ dow: number; tracked: bigint; hit_protein: bigint; hit_carbs: bigint; hit_fat: bigint }[]>`
-      SELECT
-        EXTRACT(DOW FROM date)::int AS dow,
-        COUNT(*) AS tracked,
-        COUNT(CASE WHEN protein >= ${tP} THEN 1 END) AS hit_protein,
-        COUNT(CASE WHEN carbs >= ${tC} THEN 1 END) AS hit_carbs,
-        COUNT(CASE WHEN fat >= ${tF} THEN 1 END) AS hit_fat
-      FROM (
-        SELECT date, SUM(protein) AS protein, SUM(carbs) AS carbs, SUM(fat) AS fat
-        FROM meals
-        WHERE phone = ${phone} AND date >= ${ago90}
-        GROUP BY date
-      ) daily
-      GROUP BY dow
-    `,
+    adherenceQuery(ago7),
+    adherenceQuery(ago14),
+    adherenceQuery(ago28),
   ]);
 
   const todayProtein = todayMeals.reduce((s, m) => s + m.protein, 0);
@@ -51,17 +59,23 @@ async function getNutricionData(phone: string) {
     calories: d._sum.calories ?? 0,
   }));
 
-  const adherenceData = adherenceRaw.map(r => ({
-    day: r.dow,
-    tracked: Number(r.tracked),
-    hitProtein: Number(r.hit_protein),
-    hitCarbs: Number(r.hit_carbs),
-    hitFat: Number(r.hit_fat),
-  }));
+  const toAdherence = (rows: { dow: number; tracked: bigint; hit_protein: bigint; hit_carbs: bigint; hit_fat: bigint }[]) =>
+    rows.map(r => ({
+      day: r.dow,
+      tracked: Number(r.tracked),
+      hitProtein: Number(r.hit_protein),
+      hitCarbs: Number(r.hit_carbs),
+      hitFat: Number(r.hit_fat),
+    }));
 
   return {
     user, todayMeals, todayProtein, todayCarbs, todayFat, todayCalories,
-    weekData, adherenceData,
+    weekData,
+    adherenceByPeriod: {
+      week: toAdherence(adh7),
+      twoWeeks: toAdherence(adh14),
+      month: toAdherence(adh28),
+    },
   };
 }
 
@@ -70,7 +84,7 @@ export default async function NutricionPage() {
   if (!session) redirect("/login");
 
   const data = await getNutricionData(session.phone);
-  const { user, todayMeals, todayProtein, todayCarbs, todayFat, todayCalories, weekData, adherenceData } = data;
+  const { user, todayMeals, todayProtein, todayCarbs, todayFat, todayCalories, weekData, adherenceByPeriod } = data;
 
 
   return (
@@ -88,7 +102,7 @@ export default async function NutricionPage() {
       </div>
 
       <div className="mb-6">
-        <MacroAdherenceChart data={adherenceData} />
+        <MacroAdherenceChart dataByPeriod={adherenceByPeriod} />
       </div>
 
       <h3 className="text-lg font-semibold mb-4">Comidas de hoy</h3>

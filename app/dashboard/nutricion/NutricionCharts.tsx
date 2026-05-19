@@ -1,7 +1,8 @@
 "use client";
+import { useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  LineChart, Line, ReferenceLine, PieChart, Pie, Cell, Legend,
+  ReferenceLine, PieChart, Pie, Cell, Legend,
 } from "recharts";
 
 const COLORS = { protein: "#818cf8", carbs: "#34d399", fat: "#fbbf24" };
@@ -67,19 +68,49 @@ export function CaloriasWeekChart({ data, target }: {
   );
 }
 
-export function MacroAdherenceChart({ data }: {
-  data: { day: number; tracked: number; hitProtein: number; hitCarbs: number; hitFat: number }[];
+type AdherenceRow = { day: number; tracked: number; hitProtein: number; hitCarbs: number; hitFat: number };
+type Period = "week" | "twoWeeks" | "month";
+
+const PERIOD_LABELS: Record<Period, string> = {
+  week: "1 semana",
+  twoWeeks: "2 semanas",
+  month: "1 mes",
+};
+
+export function MacroAdherenceChart({ dataByPeriod }: {
+  dataByPeriod: Record<Period, AdherenceRow[]>;
 }) {
+  const [period, setPeriod] = useState<Period>("month");
+  const data = dataByPeriod[period];
+
   const fmt = data.map(d => ({
     day: DAYS[d.day],
     protein: d.tracked > 0 ? Math.round((d.hitProtein / d.tracked) * 100) : 0,
     carbs: d.tracked > 0 ? Math.round((d.hitCarbs / d.tracked) * 100) : 0,
     fat: d.tracked > 0 ? Math.round((d.hitFat / d.tracked) * 100) : 0,
   }));
+
   return (
     <div className="bg-gray-900 rounded-xl p-5">
-      <h3 className="font-semibold mb-1 text-gray-200">Adherencia de macros por día de semana</h3>
-      <p className="text-gray-500 text-xs mb-4">% de días que alcanzaste el objetivo de cada macro (últimos 90 días)</p>
+      <div className="flex items-start justify-between mb-1">
+        <h3 className="font-semibold text-gray-200">Adherencia de macros por día de semana</h3>
+        <div className="flex gap-1 shrink-0 ml-4">
+          {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className={`px-2 py-1 text-xs rounded-md transition ${
+                period === p
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-800 text-gray-400 hover:text-white"
+              }`}
+            >
+              {PERIOD_LABELS[p]}
+            </button>
+          ))}
+        </div>
+      </div>
+      <p className="text-gray-500 text-xs mb-4">% de días que alcanzaste el objetivo de cada macro</p>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={fmt} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
           <XAxis dataKey="day" tick={{ fill: "#9ca3af", fontSize: 12 }} axisLine={false} tickLine={false} />
