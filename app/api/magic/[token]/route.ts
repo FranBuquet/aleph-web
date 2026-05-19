@@ -1,8 +1,8 @@
 import { db } from "@/lib/db";
+import { setSession } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { SignJWT } from "jose";
-
-const COOKIE = "aleph_session";
+import { redirect } from "next/navigation";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -20,15 +20,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
     .setExpirationTime("7d")
     .sign(secret);
 
+  await setSession(jwt);
+
   const raw = req.nextUrl.searchParams.get("r") ?? "/dashboard";
   const redirectPath = raw.startsWith("/dashboard") ? raw : "/dashboard";
-  const response = NextResponse.redirect(new URL(redirectPath, req.url));
-  response.cookies.set(COOKIE, jwt, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7,
-    path: "/",
-  });
-  return response;
+  redirect(redirectPath);
 }
