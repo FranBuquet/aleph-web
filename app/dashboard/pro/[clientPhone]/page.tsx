@@ -101,6 +101,37 @@ function fmtDate(date: Date) {
   return new Date(date).toLocaleDateString("es-AR", { day: "numeric", month: "short" });
 }
 
+function PlanSection({ title, content, updatedAt }: { title: string; content: string; updatedAt: Date }) {
+  const lines = content.split("\n");
+  return (
+    <div className="bg-gray-900 rounded-xl p-6 mb-4">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-base font-semibold text-gray-100">{title}</h4>
+        <span className="text-gray-500 text-xs">
+          Actualizado {updatedAt.toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })}
+        </span>
+      </div>
+      <div className="space-y-1">
+        {lines.map((line, i) => {
+          const trimmed = line.trim();
+          if (!trimmed) return <div key={i} className="h-2" />;
+          const isHeading = trimmed.endsWith(":") || /^[A-ZÁÉÍÓÚÑ\s]{4,}$/.test(trimmed) || trimmed.startsWith("##") || trimmed.startsWith("**");
+          const isBullet = /^[-•*]\s/.test(trimmed);
+          const cleanLine = trimmed.replace(/^##\s*/, "").replace(/^\*\*(.+)\*\*$/, "$1").replace(/^[-•*]\s/, "");
+          if (isHeading) return <p key={i} className="text-indigo-400 font-semibold text-sm mt-3 first:mt-0">{cleanLine}</p>;
+          if (isBullet) return (
+            <div key={i} className="flex gap-2">
+              <span className="text-gray-500 mt-0.5 shrink-0">•</span>
+              <p className="text-gray-300 text-sm">{cleanLine}</p>
+            </div>
+          );
+          return <p key={i} className="text-gray-300 text-sm">{trimmed}</p>;
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default async function ClientDashboardPage({ params }: { params: Promise<{ clientPhone: string }> }) {
   const session = await getSession();
   if (!session) redirect("/login");
@@ -114,7 +145,10 @@ export default async function ClientDashboardPage({ params }: { params: Promise<
   if (!proAccount || proAccount.clients.length === 0) redirect("/dashboard/pro");
 
   const clientRecord = proAccount.clients[0];
-  const data = await getClientData(clientPhone);
+  const [data, plans] = await Promise.all([
+    getClientData(clientPhone),
+    db.proPlan.findMany({ where: { clientPhone }, orderBy: { type: "asc" } }),
+  ]);
   const { user, todayMeals, todayProtein, todayCarbs, todayFat, todayCalories,
           caloriesWeekData, adherenceByPeriod, weightData, recentSessions, sessionsWeekData } = data;
 
@@ -128,6 +162,27 @@ export default async function ClientDashboardPage({ params }: { params: Promise<
         </Link>
         <h2 className="text-2xl font-semibold">{displayName}</h2>
       </div>
+
+      {/* Planes */}
+      {plans.length > 0 && (
+        <div id="planes" className="mb-8">
+          <h3 className="text-lg font-semibold mb-4 text-gray-300">Planes</h3>
+          {plans.find(p => p.type === "diet") && (
+            <PlanSection
+              title="🥗 Plan de alimentación"
+              content={plans.find(p => p.type === "diet")!.content}
+              updatedAt={plans.find(p => p.type === "diet")!.updatedAt}
+            />
+          )}
+          {plans.find(p => p.type === "training") && (
+            <PlanSection
+              title="🏋️ Rutina de entrenamiento"
+              content={plans.find(p => p.type === "training")!.content}
+              updatedAt={plans.find(p => p.type === "training")!.updatedAt}
+            />
+          )}
+        </div>
+      )}
 
       {/* Nutrición */}
       <h3 className="text-lg font-semibold mb-4 text-gray-300">Nutrición</h3>

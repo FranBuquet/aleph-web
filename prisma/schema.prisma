@@ -40,6 +40,7 @@ model User {
   rateLimit           RateLimit?
   proAccount          Professional?
   authOtp             AuthOtp?
+  magicLinks          MagicLink[]
 
   @@map("users")
 }
@@ -203,4 +204,17 @@ model ProPlan {
 
   @@id([clientPhone, type])
   @@map("pro_plans")
+}
+
+model MagicLink {
+  id        String   @id @default(cuid())
+  phone     String
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+
+  user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
+
+  @@index([phone])
+  @@map("magic_links")
 }

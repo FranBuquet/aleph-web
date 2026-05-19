@@ -87,7 +87,7 @@ export default async function ProPage() {
   // ── Pro client list ──────────────────────────────────────────
   const clientsData = await Promise.all(
     proAccount.clients.map(async (c) => {
-      const [lastMeal, lastSession, user] = await Promise.all([
+      const [lastMeal, lastSession, user, plans] = await Promise.all([
         db.meal.findFirst({
           where: { phone: c.clientPhone },
           orderBy: { date: "desc" },
@@ -102,6 +102,10 @@ export default async function ProPage() {
           where: { phone: c.clientPhone },
           select: { name: true, weight: true, targetWeight: true },
         }),
+        db.proPlan.findMany({
+          where: { clientPhone: c.clientPhone },
+          select: { type: true },
+        }),
       ]);
       return {
         alias: c.alias,
@@ -109,6 +113,8 @@ export default async function ProPage() {
         lastMeal: lastMeal?.date ?? null,
         lastSession: lastSession?.date ?? null,
         user,
+        hasDiet: plans.some(p => p.type === "diet"),
+        hasTraining: plans.some(p => p.type === "training"),
       };
     })
   );
@@ -170,6 +176,27 @@ export default async function ProPage() {
                     <p className="text-gray-300 text-xs">{daysAgoLabel(c.lastSession)}</p>
                   </div>
                 </div>
+
+                {(c.hasDiet || c.hasTraining) && (
+                  <div className="flex gap-2 pt-3 border-t border-gray-800">
+                    {c.hasDiet && (
+                      <Link
+                        href={`/dashboard/pro/${c.clientPhone}#planes`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white text-xs rounded-lg transition"
+                      >
+                        🥗 Plan nutricional
+                      </Link>
+                    )}
+                    {c.hasTraining && (
+                      <Link
+                        href={`/dashboard/pro/${c.clientPhone}#planes`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white text-xs rounded-lg transition"
+                      >
+                        🏋️ Plan entrenamiento
+                      </Link>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
