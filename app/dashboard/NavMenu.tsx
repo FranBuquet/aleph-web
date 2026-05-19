@@ -7,6 +7,7 @@ const links = [
   { href: "/dashboard/nutricion", label: "Nutrición" },
   { href: "/dashboard/entrenamiento", label: "Entrenamiento" },
   { href: "/dashboard/rutina", label: "Rutina" },
+  { href: "/dashboard/plan", label: "Mi Plan" },
   { href: "/dashboard/pro", label: "Pro" },
   { href: "/dashboard/perfil", label: "Perfil" },
 ];
