@@ -85,7 +85,7 @@ export function MacroAdherenceChart({ data }: {
           <XAxis dataKey="day" tick={{ fill: "#9ca3af", fontSize: 12 }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} domain={[0, 100]} axisLine={false} tickLine={false} />
           <Tooltip contentStyle={{ background: "#1f2937", border: "none", borderRadius: 8 }} formatter={(v) => [`${v}%`]} />
-          <Legend formatter={(v) => <span className="text-gray-300 text-xs capitalize">{v === "protein" ? "Proteína" : v === "carbs" ? "Carbos" : "Grasa"}</span>} />
+          <Legend formatter={(v) => <span className="text-gray-300 text-xs">{v}</span>} />
           <ReferenceLine y={80} stroke="#6b7280" strokeDasharray="4 4" />
           <Bar dataKey="protein" name="Proteína" fill={COLORS.protein} radius={[4, 4, 0, 0]} />
           <Bar dataKey="carbs" name="Carbos" fill={COLORS.carbs} radius={[4, 4, 0, 0]} />
