@@ -12,6 +12,11 @@ export function PesoChart({ data, target }: { data: { date: string; weight: numb
   );
 
   const avg = data.reduce((s, d) => s + d.weight, 0) / data.length;
+  const weights = data.map(d => d.weight);
+  const minVal = Math.min(...weights, target ?? Infinity);
+  const maxVal = Math.max(...weights, target ?? -Infinity);
+  const pad = (maxVal - minVal) * 0.1 || 1;
+  const yDomain: [number, number] = [Math.floor(minVal - pad), Math.ceil(maxVal + pad)];
 
   return (
     <div className="bg-gray-900 rounded-xl p-5">
@@ -22,7 +27,7 @@ export function PesoChart({ data, target }: { data: { date: string; weight: numb
           <XAxis dataKey="date" tick={{ fill: "#9ca3af", fontSize: 11 }} axisLine={false} tickLine={false}
             tickFormatter={d => d.slice(5)} interval="preserveStartEnd" />
           <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} axisLine={false} tickLine={false}
-            domain={["auto", "auto"]} tickFormatter={v => `${v}kg`} />
+            domain={yDomain} tickFormatter={v => `${v}kg`} />
           <Tooltip contentStyle={{ background: "#1f2937", border: "none", borderRadius: 8 }}
             formatter={(v) => [`${v} kg`, "Peso"]}
             labelFormatter={l => new Date(l as string).toLocaleDateString("es-AR")} />
