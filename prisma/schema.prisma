@@ -105,10 +105,11 @@ model BodyWeight {
 }
 
 model Routine {
-  id    String @id @default(cuid())
-  phone String
-  name  String
-  data  Json
+  id       String  @id @default(cuid())
+  phone    String
+  name     String
+  data     Json
+  isActive Boolean @default(false) @map("is_active")
 
   user User @relation(fields: [phone], references: [phone], onDelete: Cascade)
 
