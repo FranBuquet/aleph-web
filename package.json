@@ -1,5 +1,5 @@
 {
-  "name": "dashboard-web",
+  "name": "aleph-web",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -13,7 +13,10 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "framer-motion": "^12.38.0",
     "jose": "^6.2.3",
+    "lucide-react": "^1.16.0",
+    "mercadopago": "^2.12.1",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",

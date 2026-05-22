@@ -1,20 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { MotionProvider } from "@/components/MotionProvider";
+import { LanguageProvider } from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
-  title: "Aleph",
-  description: "Tu dashboard de salud y fitness",
+  title: "Aleph — Tu coach de fitness en WhatsApp",
+  description: "Coach de fitness con IA por WhatsApp. Nutrición, rutinas, integración con Apple Watch y Strava. Sin app que descargar.",
 };
 
 export default function RootLayout({
@@ -23,11 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="es" className="h-full">
+      <body className="min-h-full">
+        <LanguageProvider>
+          <MotionProvider>{children}</MotionProvider>
+        </LanguageProvider>
+      </body>
     </html>
   );
 }
