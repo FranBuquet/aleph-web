@@ -14,7 +14,7 @@ export async function createAlephSubscription(
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",
-        transaction_amount: 9900,
+        transaction_amount: 14499,
         currency_id: "ARS",
         free_trial: { frequency: 7, frequency_type: "days" },
       },

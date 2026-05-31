@@ -162,8 +162,8 @@ export const content = {
         { from: "bot" as const, text: "📝 Enviá el plan en el próximo mensaje." },
       ],
       plans: [
-        { name: "Starter", clients: 10, price: "$19.900", period: "/mes", recommended: false },
-        { name: "Pro", clients: 25, price: "$34.900", period: "/mes", recommended: true },
+        { name: "Starter", clients: 10, price: "$29.999", period: "/mes", recommended: false },
+        { name: "Pro", clients: 25, price: "$49.999", period: "/mes", recommended: true },
       ],
       plans_note: "Los clientes que sumés al seguimiento deben tener suscripción activa en Aleph.",
       cta: "Empezar →",
@@ -336,8 +336,8 @@ export const content = {
         { from: "bot" as const, text: "📝 Send the plan in your next message." },
       ],
       plans: [
-        { name: "Starter", clients: 10, price: "$19.900", period: "/mo", recommended: false },
-        { name: "Pro", clients: 25, price: "$34.900", period: "/mo", recommended: true },
+        { name: "Starter", clients: 10, price: "$29.999", period: "/mo", recommended: false },
+        { name: "Pro", clients: 25, price: "$49.999", period: "/mo", recommended: true },
       ],
       plans_note: "Clients you add to tracking must have an active Aleph subscription.",
       cta: "Get started →",

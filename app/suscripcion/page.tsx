@@ -3,7 +3,7 @@ import { subscribeAction } from "@/app/actions/subscribe";
 
 export const metadata: Metadata = {
   title: "Suscribite — Aleph",
-  description: "7 días gratis, luego $9.900/mes. Cancelá cuando quieras.",
+  description: "7 días gratis, luego $14.499/mes. Cancelá cuando quieras.",
 };
 
 export default function SuscripcionPage() {
@@ -19,7 +19,7 @@ export default function SuscripcionPage() {
 
         <h1 className="text-3xl font-bold text-navy mb-2">Empezá tu prueba gratis</h1>
         <p className="text-navy/50 mb-8">
-          7 días sin cargo · Luego <strong className="text-navy">$9.900/mes</strong> · Cancelá cuando quieras
+          7 días sin cargo · Luego <strong className="text-navy">$14.499/mes</strong> · Cancelá cuando quieras
         </p>
 
         <form action={subscribeAction} className="space-y-4">
